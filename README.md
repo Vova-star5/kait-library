@@ -22,9 +22,22 @@ PHP 8, MySQL 8, без фреймворков. Клиентская часть �
 
 ## Установка
 
-1. Скопируйте проект в папку веб-сервера (XAMPP: `htdocs`, OpenServer: `domains`).
+1. Скопируйте проект в папку веб-сервера (XAMPP: `htdocs`, OpenServer: `domains`) и запустите Apache и MySQL.
 2. Создайте базу данных `kait_library` и импортируйте `database/schema.sql`.
-3. Откройте `http://localhost/kait-library/public/`.
+3. Импортируйте тестовые данные `database/seed.sql` — без них каталог пуст и войти некем.
+4. Откройте `http://localhost/kait-library/public/`.
+
+Команды для XAMPP (из папки проекта):
+
+```
+C:\xampp\mysql\bin\mysql -u root -e "CREATE DATABASE kait_library CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+C:\xampp\mysql\bin\mysql -u root --default-character-set=utf8mb4 kait_library -e "source database/schema.sql"
+C:\xampp\mysql\bin\mysql -u root --default-character-set=utf8mb4 kait_library -e "source database/seed.sql"
+```
+
+Файл `.env` для XAMPP не нужен: подходят настройки по умолчанию.
+
+Тестовые пользователи (пароль у всех `password`): `admin@kait20.ru` — администратор, `librarian@kait20.ru` — библиотекарь, `ivanov@student.kait20.ru` — студент.
 
 ## Структура
 
