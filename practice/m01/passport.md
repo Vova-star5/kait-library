@@ -93,13 +93,25 @@
 
 ## 6. Запуск
 
-Шаги, которые реально сработали у вас (с командами):
+Шаги, которые реально сработали у меня (Windows 11, XAMPP 8.2.12):
 
 ```
-TODO
+winget install --id ApacheFriends.Xampp.8.2 --exact
+# проект скопирован в C:\xampp\htdocs\kait-library, запущены Apache и MySQL
+cd C:\xampp\htdocs\kait-library
+C:\xampp\mysql\bin\mysql -u root -e "CREATE DATABASE kait_library CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+C:\xampp\mysql\bin\mysql -u root --default-character-set=utf8mb4 kait_library -e "source database/schema.sql"
+C:\xampp\mysql\bin\mysql -u root --default-character-set=utf8mb4 kait_library -e "source database/seed.sql"
+# открыть http://localhost/kait-library/public/
 ```
 
-Проблемы при запуске и как решили: TODO
+Файл `.env` создавать не пришлось: значения по умолчанию в `config/config.php` подходят для XAMPP. Проверен вход под `librarian@kait20.ru` (пароль из `seed.sql`), панель выдачи и список должников работают.
+
+Проблемы при запуске и как решили:
+
+- По README в базе создаётся только структура: после `schema.sql` в таблицах `users` и `books` 0 записей, каталог пуст и войти некем. Шага с `seed.sql` в README не было — инструкция дополнена (коммит «docs: дополнена инструкция запуска»).
+- В README не указаны тестовые логин и пароль, они есть только в комментарии `seed.sql` — добавлены.
+- `schema.sql` заявляет MariaDB 10.6+, но в XAMPP версия 10.4.32; проект с ней работает.
 
 ## 7. Вывод о проекте
 
