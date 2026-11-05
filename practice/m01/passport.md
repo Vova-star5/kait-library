@@ -30,7 +30,23 @@ TODO
 
 | Папка / файл | Назначение |
 |---|---|
-| TODO | TODO |
+| `public/index.php` | точка входа для страниц: `index.php?page=...`, все маршруты страниц — один `switch` на 11 страниц |
+| `public/api.php` | JSON API для клиентских скриптов: `api.php?action=...`, 13 действий в одном `switch` |
+| `public/assets/js/` | клиент: `api.js` — обёртка над `fetch`, остальные файлы (`catalog.js`, `book.js`, `librarian.js`, `admin.js`, `reservations.js`) — логика отдельных страниц |
+| `public/assets/css/style.css` | единственный файл стилей, включая адаптивную вёрстку |
+| `public/uploads/` | загруженные обложки книг, в Git только `.gitkeep` |
+| `src/bootstrap.php` | подключает конфигурацию и все классы через `require_once`, запускает сессию; автозагрузки нет |
+| `src/Database.php` | обёртка над PDO: `fetchAll`, `fetchOne`, `execute`, `insert` с подготовленными запросами |
+| `src/Auth.php` | вход, регистрация, проверка ролей |
+| `src/LoanService.php` | ядро бизнес-логики: выдача, возврат, штраф, бронирование (200 строк) |
+| `src/BookRepository.php`, `UserRepository.php`, `ReservationRepository.php`, `ReviewRepository.php` | запросы к таблицам БД |
+| `src/ReportService.php` | список должников, выгрузка CSV, статистика |
+| `src/Validator.php`, `src/helpers.php` | проверка полей форм; вспомогательные функции (`render`, `redirect`, `json_response`, `e`) |
+| `templates/` | 11 шаблонов страниц на PHP и общий `layout.php` |
+| `config/config.php` | читает `.env`, задаёт константы: БД, лимиты выдачи, сроки, штраф |
+| `database/schema.sql` | структура БД: 7 таблиц (`users`, `genres`, `books`, `copies`, `loans`, `reservations`, `reviews`); миграций нет |
+| `database/seed.sql` | тестовые данные: 6 пользователей, 10 книг, 14 экземпляров, 5 выдач |
+| `.env.example` | шаблон настроек: приложение и подключение к БД |
 
 ## 4. Зависимости
 
