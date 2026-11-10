@@ -25,14 +25,9 @@ class LoanService
         if (!$copy) {
             return ['ok' => false, 'message' => 'Экземпляр не найден'];
         }
-        if ($copy['status'] != 'available') {
-            if ($copy['status'] == 'issued') {
-                return ['ok' => false, 'message' => 'Экземпляр уже выдан'];
-            } elseif ($copy['status'] == 'repair') {
-                return ['ok' => false, 'message' => 'Экземпляр на ремонте'];
-            } else {
-                return ['ok' => false, 'message' => 'Экземпляр списан или утерян'];
-            }
+        $copyError = self::copyStatusError($copy);
+        if ($copyError !== null) {
+            return ['ok' => false, 'message' => $copyError];
         }
 
         // лимит книг на руках
@@ -117,6 +112,23 @@ class LoanService
             'due_at' => $dueAt,
             'warnings' => $warnings,
         ];
+    }
+
+    /**
+     * Причина, по которой экземпляр нельзя выдать, или null, если он свободен.
+     */
+    private static function copyStatusError($copy)
+    {
+        if ($copy['status'] == 'available') {
+            return null;
+        }
+        if ($copy['status'] == 'issued') {
+            return 'Экземпляр уже выдан';
+        }
+        if ($copy['status'] == 'repair') {
+            return 'Экземпляр на ремонте';
+        }
+        return 'Экземпляр списан или утерян';
     }
 
     /**
