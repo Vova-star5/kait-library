@@ -48,26 +48,11 @@ class LoanService
             }
         }
 
-        // бронирования: свободный экземпляр нельзя выдать, если его ждут другие
-        $reservations = Database::fetchAll(
-            "SELECT * FROM reservations WHERE book_id = ? AND status = 'active' ORDER BY created_at",
-            [$copy['book_id']]
-        );
-        $ownReservation = null;
-        $othersBefore = 0;
-        foreach ($reservations as $reservation) {
-            if ($reservation['user_id'] == $reader['id']) {
-                $ownReservation = $reservation;
-                break;
-            }
-            $othersBefore++;
+        $queue = self::checkReservations($copy['book_id'], $reader['id']);
+        if ($queue['error'] !== null) {
+            return ['ok' => false, 'message' => $queue['error']];
         }
-        if ($othersBefore > 0) {
-            $available = BookRepository::availableCount($copy['book_id']);
-            if ($available <= $othersBefore) {
-                return ['ok' => false, 'message' => 'Все свободные экземпляры забронированы другими читателями'];
-            }
-        }
+        $ownReservation = $queue['own'];
 
         // срок возврата
         if ($reader['category'] == 'student') {
@@ -140,6 +125,35 @@ class LoanService
             return 'Превышен лимит книг на руках (' . $limit . ')';
         }
         return null;
+    }
+
+    /**
+     * Очередь бронирований: свободный экземпляр нельзя выдать, если его ждут другие.
+     * Возвращает ['own' => бронь читателя или null, 'error' => сообщение или null]
+     */
+    private static function checkReservations($bookId, $readerId)
+    {
+        $reservations = Database::fetchAll(
+            "SELECT * FROM reservations WHERE book_id = ? AND status = 'active' ORDER BY created_at",
+            [$bookId]
+        );
+        $ownReservation = null;
+        $othersBefore = 0;
+        foreach ($reservations as $reservation) {
+            if ($reservation['user_id'] == $readerId) {
+                $ownReservation = $reservation;
+                break;
+            }
+            $othersBefore++;
+        }
+        $error = null;
+        if ($othersBefore > 0) {
+            $available = BookRepository::availableCount($bookId);
+            if ($available <= $othersBefore) {
+                $error = 'Все свободные экземпляры забронированы другими читателями';
+            }
+        }
+        return ['own' => $ownReservation, 'error' => $error];
     }
 
     /**
