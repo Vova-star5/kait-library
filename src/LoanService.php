@@ -47,14 +47,7 @@ class LoanService
 
         $dueAt = self::dueDate($reader['category']);
 
-        Database::insert(
-            'INSERT INTO loans (copy_id, user_id, librarian_id, issued_at, due_at) VALUES (?, ?, ?, ?, ?)',
-            [$copy['id'], $reader['id'], $librarianId, date('Y-m-d'), $dueAt]
-        );
-        Database::execute("UPDATE copies SET status = 'issued' WHERE id = ?", [$copy['id']]);
-        if ($ownReservation) {
-            Database::execute("UPDATE reservations SET status = 'done' WHERE id = ?", [$ownReservation['id']]);
-        }
+        self::saveLoan($copy['id'], $reader['id'], $librarianId, $dueAt, $ownReservation);
 
         return [
             'ok' => true,
@@ -173,6 +166,21 @@ class LoanService
             $due = strtotime('+2 days', $due);
         }
         return date('Y-m-d', $due);
+    }
+
+    /**
+     * Запись выдачи: новая строка в loans, экземпляр — выдан, бронь читателя — исполнена.
+     */
+    private static function saveLoan($copyId, $readerId, $librarianId, $dueAt, $ownReservation)
+    {
+        Database::insert(
+            'INSERT INTO loans (copy_id, user_id, librarian_id, issued_at, due_at) VALUES (?, ?, ?, ?, ?)',
+            [$copyId, $readerId, $librarianId, date('Y-m-d'), $dueAt]
+        );
+        Database::execute("UPDATE copies SET status = 'issued' WHERE id = ?", [$copyId]);
+        if ($ownReservation) {
+            Database::execute("UPDATE reservations SET status = 'done' WHERE id = ?", [$ownReservation['id']]);
+        }
     }
 
     /**
