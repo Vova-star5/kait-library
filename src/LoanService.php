@@ -30,18 +30,9 @@ class LoanService
             return ['ok' => false, 'message' => $copyError];
         }
 
-        // лимит книг на руках
-        $active = Database::fetchOne(
-            'SELECT COUNT(*) AS cnt FROM loans WHERE user_id = ? AND returned_at IS NULL',
-            [$reader['id']]
-        );
-        if ($reader['category'] == 'student') {
-            $limit = MAX_BOOKS_STUDENT;
-        } else {
-            $limit = MAX_BOOKS_TEACHER;
-        }
-        if ($active['cnt'] > $limit) {
-            return ['ok' => false, 'message' => 'Превышен лимит книг на руках (' . $limit . ')'];
+        $limitError = self::loanLimitError($reader);
+        if ($limitError !== null) {
+            return ['ok' => false, 'message' => $limitError];
         }
 
         // просроченные книги
@@ -129,6 +120,26 @@ class LoanService
             return 'Экземпляр на ремонте';
         }
         return 'Экземпляр списан или утерян';
+    }
+
+    /**
+     * Лимит книг на руках: сообщение, если он превышен, иначе null.
+     */
+    private static function loanLimitError($reader)
+    {
+        $active = Database::fetchOne(
+            'SELECT COUNT(*) AS cnt FROM loans WHERE user_id = ? AND returned_at IS NULL',
+            [$reader['id']]
+        );
+        if ($reader['category'] == 'student') {
+            $limit = MAX_BOOKS_STUDENT;
+        } else {
+            $limit = MAX_BOOKS_TEACHER;
+        }
+        if ($active['cnt'] > $limit) {
+            return 'Превышен лимит книг на руках (' . $limit . ')';
+        }
+        return null;
     }
 
     /**
