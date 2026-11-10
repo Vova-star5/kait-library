@@ -5,13 +5,13 @@ class BookRepository
     /**
      * Поиск книг по названию или автору с фильтром по жанру.
      */
-    public static function search($q = '', $genreId = '', $sort = 'b.title')
+    public static function search($query = '', $genreId = '', $sort = 'b.title')
     {
         $sql = "SELECT b.*, g.name AS genre FROM books b
                 LEFT JOIN genres g ON g.id = b.genre_id
                 WHERE 1=1";
-        if ($q != '') {
-            $sql .= " AND (b.title LIKE '%" . $q . "%' OR b.author LIKE '%" . $q . "%')";
+        if ($query != '') {
+            $sql .= " AND (b.title LIKE '%" . $query . "%' OR b.author LIKE '%" . $query . "%')";
         }
         if ($genreId != '') {
             $sql .= " AND b.genre_id = " . $genreId;
