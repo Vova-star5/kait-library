@@ -11,8 +11,6 @@ class LoanService
      */
     public static function issue($readerEmail, $inventoryNumber, $librarianId)
     {
-        $warnings = [];
-
         $reader = Database::fetchOne('SELECT * FROM users WHERE email = ?', [$readerEmail]);
         if (!$reader) {
             return ['ok' => false, 'message' => 'Читатель не найден'];
@@ -35,18 +33,11 @@ class LoanService
             return ['ok' => false, 'message' => $limitError];
         }
 
-        // просроченные книги
-        $overdue = Database::fetchOne(
-            'SELECT COUNT(*) AS cnt FROM loans WHERE user_id = ? AND returned_at IS NULL AND due_at < ?',
-            [$reader['id'], date('Y-m-d')]
-        );
-        if ($overdue['cnt'] > 0) {
-            if ($reader['category'] == 'student') {
-                return ['ok' => false, 'message' => 'У читателя есть просроченные книги'];
-            } else {
-                $warnings[] = 'У читателя есть просроченные книги (' . $overdue['cnt'] . ')';
-            }
+        $overdue = self::overdueCheck($reader);
+        if ($overdue['error'] !== null) {
+            return ['ok' => false, 'message' => $overdue['error']];
         }
+        $warnings = $overdue['warnings'];
 
         $queue = self::checkReservations($copy['book_id'], $reader['id']);
         if ($queue['error'] !== null) {
@@ -108,6 +99,27 @@ class LoanService
             return 'Превышен лимит книг на руках (' . $limit . ')';
         }
         return null;
+    }
+
+    /**
+     * Просроченные книги: студенту выдача запрещена, преподавателю — предупреждение.
+     * Возвращает ['error' => сообщение или null, 'warnings' => []]
+     */
+    private static function overdueCheck($reader)
+    {
+        $warnings = [];
+        $overdue = Database::fetchOne(
+            'SELECT COUNT(*) AS cnt FROM loans WHERE user_id = ? AND returned_at IS NULL AND due_at < ?',
+            [$reader['id'], date('Y-m-d')]
+        );
+        if ($overdue['cnt'] > 0) {
+            if ($reader['category'] == 'student') {
+                return ['error' => 'У читателя есть просроченные книги', 'warnings' => $warnings];
+            } else {
+                $warnings[] = 'У читателя есть просроченные книги (' . $overdue['cnt'] . ')';
+            }
+        }
+        return ['error' => null, 'warnings' => $warnings];
     }
 
     /**
