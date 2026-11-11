@@ -1,0 +1,12 @@
+# Текстовые файлы хранятся в репозитории и извлекаются в рабочую папку с окончаниями строк LF
+* text=auto eol=lf
+
+# Двоичные файлы git не изменяет
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.pdf  binary
+*.docx binary
+*.zip  binary

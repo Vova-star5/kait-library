@@ -1,14 +1,15 @@
 <?php
+
 /**
  * JSON API для клиентских скриптов: api.php?action=...
  */
+
 require_once __DIR__ . '/../src/bootstrap.php';
 
 $action = $_GET['action'] ?? '';
 
 try {
     switch ($action) {
-
         case 'books.search':
             $books = BookRepository::search(
                 $_GET['q'] ?? '',
