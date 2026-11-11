@@ -19,14 +19,16 @@
 ## 2. Как запустить проект
 
 1. Запустите **XAMPP Control Panel** и нажмите **Start** у Apache и MySQL.
-2. Склонируйте репозиторий **в папку `htdocs`** и перейдите на нужную ветку (Apache показывает только
-   то, что лежит в `htdocs`):
+2. Склонируйте репозиторий **в папку `htdocs`** (Apache показывает только то, что лежит в `htdocs`).
+   Нужную ветку указывайте сразу в `git clone` через `-b`:
    ```
    cd C:\xampp\htdocs
-   git clone https://github.com/Vova-star5/kait-library.git
+   git clone -b main https://github.com/Vova-star5/kait-library.git
    cd kait-library
-   git switch main
    ```
+   Если склонировать `main`, а потом переключиться командой `git switch` на ветку, где `.gitattributes`
+   только появился, файлы, которые в ветках одинаковые, останутся с окончаниями CRLF. Исправить:
+   `git rm -r --cached -q .` и `git reset --hard` — git заново извлечёт все файлы с LF.
 3. Создайте базу и загрузите таблицы и тестовые данные (команды выполнять из папки проекта):
    ```
    C:\xampp\mysql\bin\mysql -u root -e "CREATE DATABASE kait_library CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
@@ -60,6 +62,9 @@
   `core.autocrlf=true`. Ничего делать не нужно.
 - **`.vscode/settings.json`** — настройки VS Code для этого проекта: те же отступы и LF, форматтер PHP —
   Intelephense в стиле PSR-12, форматирование при сохранении выключено.
+- При первом открытии папки VS Code включает **ограниченный режим** (полоса сверху «Ограниченный режим…»).
+  В нём не применяются настройки из `.vscode/` и не работают расширения. Нажмите в полосе **Управление** →
+  **Доверять**.
 - **`.vscode/extensions.json`** — список нужных расширений. При первом открытии папки VS Code покажет
   внизу справа «Установить рекомендуемые расширения?» — нажмите **Установить**. Если окно не появилось:
   панель «Расширения» (Ctrl+Shift+X) → фильтр `@recommended`.
