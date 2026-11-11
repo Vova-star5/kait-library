@@ -1,7 +1,9 @@
 <?php
+
 /**
  * Точка входа для страниц сайта: index.php?page=...
  */
+
 require_once __DIR__ . '/../src/bootstrap.php';
 
 $page = $_GET['page'] ?? 'catalog';
