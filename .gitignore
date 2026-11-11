@@ -3,3 +3,6 @@ public/uploads/*
 !public/uploads/.gitkeep
 .idea/
 *.log
+
+# NetBeans: личные настройки (пути, открытые файлы) — не коммитим
+nbproject/private/
