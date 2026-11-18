@@ -62,7 +62,7 @@ LibreOffice — `soffice --invisible --convert-to` (тот же модуль в�
 ONLYOFFICE — встроенный конвертер `x2t` из комплекта программы (им же редактор печатает и сохраняет);
 Pages и Numbers — команды AppleScript `open` / `export` самой программы. Страницы PDF превращены в картинки средствами macOS
 (PDFKit) и сравнены рядом. Номера страниц заголовков и оглавления, шрифты, закладки и ссылки извлечены из PDF скриптом (pypdf),
-поэтому сравнение не «на глаз». Скрипты: `Desktop/Practice/tools` (convert.sh, pdfcheck.py, csvcheck.py, t6.sh).
+поэтому сравнение не «на глаз».
 
 ### Т1. Отчёт по шаблону колледжа (`ISPO332_Ivannikov_M03.docx`, контроль — `ISPO332_Ivannikov_M04.docx`)
 
