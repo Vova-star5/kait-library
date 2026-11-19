@@ -6,3 +6,6 @@ public/uploads/*
 
 # NetBeans: личные настройки (пути, открытые файлы) — не коммитим
 nbproject/private/
+practice/m07/*.mkv
+practice/m07/*.webm
+practice/m07/draft*
