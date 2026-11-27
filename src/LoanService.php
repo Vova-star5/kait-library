@@ -213,11 +213,11 @@ class LoanService
         );
         Database::execute("UPDATE copies SET status = 'available' WHERE id = ?", [$loan['copy_id']]);
 
-        $msg = 'Книга принята';
+        $message = 'Книга принята';
         if ($fine > 0) {
-            $msg .= '. Штраф: ' . $fine . ' руб.';
+            $message .= '. Штраф: ' . $fine . ' руб.';
         }
-        return ['ok' => true, 'message' => $msg, 'fine' => $fine];
+        return ['ok' => true, 'message' => $message, 'fine' => $fine];
     }
 
     public static function reserve($bookId, $userId)
