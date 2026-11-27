@@ -1,0 +1,27 @@
+================================================
+  NLOC    CCN   token  PARAM  length  location
+------------------------------------------------
+      40      8    297      1      47 LoanService::issue@12-58@src/LoanService.php
+      13      4     50      1      13 LoanService::copyStatusError@63-75@src/LoanService.php
+      16      3     64      1      16 LoanService::loanLimitError@80-95@src/LoanService.php
+      16      3     91      1      16 LoanService::overdueCheck@101-116@src/LoanService.php
+      24      5    100      1      24 LoanService::checkReservations@122-145@src/LoanService.php
+      20      6    117      1      20 LoanService::dueDate@150-169@src/LoanService.php
+      11      2     66      1      11 LoanService::saveLoan@174-184@src/LoanService.php
+      24      4    141      1      27 LoanService::returnBook@189-215@src/LoanService.php
+      10      3     57      1      10 LoanService::lateFine@221-230@src/LoanService.php
+      15      2     68      1      15 LoanService::reserve@232-246@src/LoanService.php
+      12      1     12      0      12 LoanService::activeLoans@248-259@src/LoanService.php
+      12      1     17      1      12 LoanService::userLoans@261-272@src/LoanService.php
+1 file analyzed.
+==============================================================
+NLOC    Avg.NLOC  AvgCCN  Avg.token  function_cnt    file
+--------------------------------------------------------------
+    216      17.8     3.5       90.0        12     src/LoanService.php
+
+===============================================================================================================
+No thresholds exceeded (cyclomatic_complexity > 15 or length > 1000 or nloc > 1000000 or parameter_count > 100)
+==========================================================================================
+Total nloc   Avg.NLOC  AvgCCN  Avg.token   Fun Cnt  Warning cnt   Fun Rt   nloc Rt
+------------------------------------------------------------------------------------------
+       216      17.8     3.5       90.0       12            0      0.00    0.00
