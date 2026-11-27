@@ -199,13 +199,7 @@ class LoanService
             return ['ok' => false, 'message' => 'Книга уже возвращена'];
         }
 
-        $fine = 0;
-        $today = strtotime(date('Y-m-d'));
-        $due = strtotime($loan['due_at']);
-        if ($today > $due && $loan['category'] == 'student') {
-            $daysLate = floor(($today - $due) / 86400);
-            $fine = $daysLate * FINE_PER_DAY;
-        }
+        $fine = self::lateFine($loan['due_at'], $loan['category']);
 
         Database::execute(
             'UPDATE loans SET returned_at = ?, fine = ? WHERE id = ?',
@@ -213,11 +207,26 @@ class LoanService
         );
         Database::execute("UPDATE copies SET status = 'available' WHERE id = ?", [$loan['copy_id']]);
 
-        $msg = 'Книга принята';
+        $message = 'Книга принята';
         if ($fine > 0) {
-            $msg .= '. Штраф: ' . $fine . ' руб.';
+            $message .= '. Штраф: ' . $fine . ' руб.';
         }
-        return ['ok' => true, 'message' => $msg, 'fine' => $fine];
+        return ['ok' => true, 'message' => $message, 'fine' => $fine];
+    }
+
+    /**
+     * Штраф за просрочку возврата: начисляется только студентам
+     * за каждые полные сутки после срока (день срока не считается).
+     */
+    private static function lateFine($dueAt, $category)
+    {
+        $today = strtotime(date('Y-m-d'));
+        $due = strtotime($dueAt);
+        if ($today > $due && $category == 'student') {
+            $daysLate = floor(($today - $due) / 86400);
+            return $daysLate * FINE_PER_DAY;
+        }
+        return 0;
     }
 
     public static function reserve($bookId, $userId)
