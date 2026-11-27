@@ -1,0 +1,238 @@
+{
+ "label": "m08",
+ "sha": "496d9d7",
+ "D": "2026-11-27 Europe/Moscow",
+ "time": "2026-11-27 12:38:46 +0400",
+ "before": {
+  "101": {
+   "due_at": "2026-12-01",
+   "returned_at": "NULL",
+   "fine": "0.00",
+   "status": "issued"
+  },
+  "102": {
+   "due_at": "2026-11-27",
+   "returned_at": "NULL",
+   "fine": "0.00",
+   "status": "issued"
+  },
+  "103": {
+   "due_at": "2026-11-26",
+   "returned_at": "NULL",
+   "fine": "0.00",
+   "status": "issued"
+  },
+  "104": {
+   "due_at": "2026-11-21",
+   "returned_at": "2026-11-20",
+   "fine": "0.00",
+   "status": "available"
+  },
+  "105": {
+   "due_at": "2026-11-24",
+   "returned_at": "NULL",
+   "fine": "0.00",
+   "status": "issued"
+  },
+  "107": {
+   "due_at": "2026-11-17",
+   "returned_at": "NULL",
+   "fine": "0.00",
+   "status": "issued"
+  }
+ },
+ "cases": {
+  "C01": {
+   "url": "api.php?action=loan.return",
+   "method": "POST",
+   "postData": "{\"loan_id\":\"101\"}",
+   "contentType": "application/json",
+   "status": 200,
+   "mime": "application/json",
+   "response": {
+    "ok": true,
+    "message": "Книга принята",
+    "fine": 0
+   },
+   "dialogs": [
+    {
+     "type": "confirm",
+     "message": "Принять книгу?"
+    }
+   ],
+   "row_present": false
+  },
+  "C02": {
+   "url": "api.php?action=loan.return",
+   "method": "POST",
+   "postData": "{\"loan_id\":\"102\"}",
+   "contentType": "application/json",
+   "status": 200,
+   "mime": "application/json",
+   "response": {
+    "ok": true,
+    "message": "Книга принята",
+    "fine": 0
+   },
+   "dialogs": [
+    {
+     "type": "confirm",
+     "message": "Принять книгу?"
+    }
+   ],
+   "row_present": false
+  },
+  "C03": {
+   "url": "api.php?action=loan.return",
+   "method": "POST",
+   "postData": "{\"loan_id\":\"103\"}",
+   "contentType": "application/json",
+   "status": 200,
+   "mime": "application/json",
+   "response": {
+    "ok": true,
+    "message": "Книга принята. Штраф: 10 руб.",
+    "fine": 10
+   },
+   "dialogs": [
+    {
+     "type": "confirm",
+     "message": "Принять книгу?"
+    },
+    {
+     "type": "alert",
+     "message": "Книга принята. Штраф: 10 руб."
+    }
+   ],
+   "row_present": false
+  },
+  "C05": {
+   "url": "api.php?action=loan.return",
+   "method": "POST",
+   "postData": "{\"loan_id\":\"105\"}",
+   "contentType": "application/json",
+   "status": 200,
+   "mime": "application/json",
+   "response": {
+    "ok": true,
+    "message": "Книга принята",
+    "fine": 0
+   },
+   "dialogs": [
+    {
+     "type": "confirm",
+     "message": "Принять книгу?"
+    }
+   ],
+   "row_present": false
+  },
+  "C07": {
+   "url": "api.php?action=loan.return",
+   "method": "POST",
+   "postData": "{\"loan_id\":\"107\"}",
+   "contentType": "application/json",
+   "status": 200,
+   "mime": "application/json",
+   "response": {
+    "ok": true,
+    "message": "Книга принята. Штраф: 100 руб.",
+    "fine": 100
+   },
+   "dialogs": [
+    {
+     "type": "confirm",
+     "message": "Принять книгу?"
+    },
+    {
+     "type": "alert",
+     "message": "Книга принята. Штраф: 100 руб."
+    }
+   ],
+   "row_present": false
+  },
+  "C04": {
+   "url": "api.php?action=loan.return",
+   "method": "POST",
+   "postData": "{\"loan_id\":104}",
+   "contentType": "application/json",
+   "status": 422,
+   "mime": "application/json",
+   "response": {
+    "ok": false,
+    "message": "Книга уже возвращена"
+   }
+  },
+  "C06": {
+   "url": "api.php?action=loan.return",
+   "method": "POST",
+   "postData": "{\"loan_id\":999}",
+   "contentType": "application/json",
+   "status": 422,
+   "mime": "application/json",
+   "response": {
+    "ok": false,
+    "message": "Выдача не найдена"
+   }
+  },
+  "C08": {
+   "url": "api.php?action=loan.return",
+   "method": "POST",
+   "postData": "{\"loan_id\":101}",
+   "status": 403,
+   "response": {
+    "ok": false,
+    "error": "Доступ запрещён"
+   },
+   "user": "ivanov@student.kait20.ru (reader)"
+  }
+ },
+ "rows_before": {
+  "1": "row-late",
+  "2": "row-late",
+  "3": "row-late",
+  "4": "row-late",
+  "101": "(нет класса)",
+  "102": "row-late",
+  "103": "row-late",
+  "105": "row-late",
+  "107": "row-late"
+ },
+ "after": {
+  "101": {
+   "due_at": "2026-12-01",
+   "returned_at": "2026-11-27",
+   "fine": "0.00",
+   "status": "available"
+  },
+  "102": {
+   "due_at": "2026-11-27",
+   "returned_at": "2026-11-27",
+   "fine": "0.00",
+   "status": "available"
+  },
+  "103": {
+   "due_at": "2026-11-26",
+   "returned_at": "2026-11-27",
+   "fine": "10.00",
+   "status": "available"
+  },
+  "104": {
+   "due_at": "2026-11-21",
+   "returned_at": "2026-11-20",
+   "fine": "0.00",
+   "status": "available"
+  },
+  "105": {
+   "due_at": "2026-11-24",
+   "returned_at": "2026-11-27",
+   "fine": "0.00",
+   "status": "available"
+  },
+  "107": {
+   "due_at": "2026-11-17",
+   "returned_at": "2026-11-27",
+   "fine": "100.00",
+   "status": "available"
+  }
+ }
+}
