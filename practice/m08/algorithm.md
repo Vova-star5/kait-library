@@ -30,15 +30,64 @@
 
 ## Псевдокод
 
+Номера в скобках — строки `src/LoanService.php` и `public/api.php` на SHA `2fbcb70`.
+
 ```text
-TODO
+ВХОД: библиотекарь нажал «Принять» у строки выдачи с data-loan-id = id
+ЕСЛИ confirm("Принять книгу?") = «Отмена» ТО                       // librarian.js:35
+    ВЫХОД (запрос не отправляется, строка остаётся)
+ОТПРАВИТЬ POST api.php?action=loan.return, тело {"loan_id": id}     // librarian.js:36, api.js:4–13
+
+// public/api.php
+ЕСЛИ роль пользователя не librarian и не admin ТО                  // api.php:84
+    ОТВЕТ 403 {ok: false, error: "Доступ запрещён"}; ВЫХОД          // api.php:85
+loanId ← целое(тело.loan_id)  (нет поля или не число → 0)          // api.php:87–88
+result ← returnBook(loanId)
+
+// LoanService::returnBook(loanId)
+loan ← SELECT l.*, u.category FROM loans l JOIN users u … WHERE l.id = loanId   // 191–194
+ЕСЛИ loan не найдена ТО
+    ВЕРНУТЬ {ok: false, message: "Выдача не найдена"}                 // 195–197
+ЕСЛИ loan.returned_at заполнено ТО
+    ВЕРНУТЬ {ok: false, message: "Книга уже возвращена"}              // 198–200
+fine ← 0                                                            // 202
+today ← полночь даты D (date('Y-m-d'), пояс Europe/Moscow)          // 203
+due ← полночь loan.due_at                                           // 204
+ЕСЛИ today > due (строго) И loan.category = "student" ТО            // 205
+    late_days ← floor((today − due) / 86400)                        // 206
+    fine ← late_days × FINE_PER_DAY  (10, config/config.php:48)     // 207
+UPDATE loans SET returned_at = D, fine = fine WHERE id = loanId      // 210–213
+UPDATE copies SET status = 'available' WHERE id = loan.copy_id       // 214
+message ← "Книга принята"                                           // 216
+ЕСЛИ fine > 0 ТО message ← message + ". Штраф: " + fine + " руб."   // 217–219
+ВЕРНУТЬ {ok: true, message, fine}                                    // 220
+
+// public/api.php
+ОТВЕТ JSON result, статус 200 если result.ok иначе 422              // api.php:89
+(исключение БД → 500 {ok: false, error: текст исключения})          // api.php:140–141
+
+// librarian.js:37–42
+ЕСЛИ ответ.ok ТО удалить строку; ЕСЛИ ответ.fine > 0 ТО alert(ответ.message)
+ИНАЧЕ alert(ответ.message или ответ.error), строка остаётся
 ```
+
+Другого правила здесь не предлагается: псевдокод описывает поведение исследованного SHA.
 
 ## Диаграммы
 
-- Блок-схема — [flowchart.png](flowchart.png) · редактируемый исходник — TODO
-- UML-диаграмма последовательности — [sequence.png](sequence.png) · редактируемый исходник — TODO
-- Условия, выходы и связь с проверками по ID — TODO
+- Блок-схема — [flowchart.png](flowchart.png) · редактируемый исходник — [flowchart.drawio](flowchart.drawio) (draw.io 32.7.4)
+- UML-диаграмма последовательности — [sequence.png](sequence.png) · редактируемый исходник — [sequence.drawio](sequence.drawio). Участники слева направо: библиотекарь → браузер → PHP API → LoanService → БД. Ранний выход по роли показан фрагментом `break`, отказ и успешный возврат — фрагментом `alt`. Повторяющихся сообщений в сценарии нет, поэтому `loop` не используется.
+- Условия, выходы и связь с проверками по ID:
+
+| Ветвь | Условие (код) | Выход | Проверки |
+|---|---|---|---|
+| Б1 Роль | `!Auth::hasRole(['librarian','admin'])` (api.php:84) | 403, `error` «Доступ запрещён», данные не меняются | C08 |
+| Б2 Нет выдачи | `!$loan` (LoanService.php:195) | 422, «Выдача не найдена» | C06 |
+| Б3 Уже возвращена | `$loan['returned_at']` (198) | 422, «Книга уже возвращена», данные не меняются | C04 |
+| Б4 Без штрафа | `!(today > due && category == 'student')` (205) | 200, `fine = 0`, «Книга принята», окна нет | C01 (срок после D), C02 (срок = D, граница), C05 (преподаватель, просрочка) |
+| Б5 Штраф | `today > due && category == 'student'` (205) | 200, `fine = дни × 10`, «Книга принята. Штраф: N руб.», `alert` | C03 (1 день, граница), C07 (10 дней) |
+
+Сверка обеих моделей на одном случае. Возврат в день срока (C02): на блок-схеме после «returned_at заполнено? — нет» ромб «today > due_at (строго) и category = student?» даёт «нет», значит `fine = 0`, затем две записи и ответ «Книга принята». На UML это операнд `[выдача активна]`: сообщение 7 (`fine = 0`), 8 и 9 — к БД, 10–12 — ответ и удаление строки. Порядок совпадает с `LoanService.php:202–220`. Отказ (C04): ромб «returned_at заполнено? — да» → 422; на UML — операнд `[… returned_at заполнено]`, сообщения 7a–9a, обращений к БД после `SELECT` нет.
 
 ## Расхождения и вывод
 
