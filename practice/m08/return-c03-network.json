@@ -1,0 +1,39 @@
+{
+  "scenario": "Возврат книги, случай C03",
+  "sha": "2fbcb700fbc2f4804cc317cce6b48c662c741934",
+  "observed": "2026-11-27 12:34:13 +0400",
+  "app_date": "2026-11-27 Europe/Moscow",
+  "request": {
+    "method": "POST",
+    "url": "http://localhost:8080/api.php?action=loan.return",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "loan_id": "103"
+    }
+  },
+  "response": {
+    "status": 200,
+    "Content-Type": "application/json",
+    "body": {
+      "ok": true,
+      "message": "Книга принята. Штраф: 10 руб.",
+      "fine": 10
+    }
+  },
+  "ui": {
+    "dialogs": [
+      {
+        "type": "confirm",
+        "message": "Принять книгу?"
+      },
+      {
+        "type": "alert",
+        "message": "Книга принята. Штраф: 10 руб."
+      }
+    ],
+    "row_removed": true
+  },
+  "note": "Cookies и заголовки авторизации не сохранялись."
+}
